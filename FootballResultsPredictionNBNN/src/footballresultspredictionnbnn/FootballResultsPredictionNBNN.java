@@ -65,11 +65,9 @@ public class FootballResultsPredictionNBNN extends Frame{
     public static void main(String[] args) throws IOException {
         
         PredictorUI ui = new PredictorUI();
-        homePrediction = ui.getHomePred();
-        awayPrediction = ui.getAwayPred();
-        System.out.println(homePrediction);
-        System.out.println(awayPrediction);
         
+        
+        /*
         NaiveBayesClassifier team1 = new NaiveBayesClassifier();
         //when call calculate propability, send team data
         NaiveBayesClassifier team2 = new NaiveBayesClassifier();
@@ -85,7 +83,7 @@ public class FootballResultsPredictionNBNN extends Frame{
        
         //Learning.neuralNetwork(probTeam1,probTeam2);
         //use these two values to input into Neural Network
-        
+        */
         //jsonGetRequest();
         
         
