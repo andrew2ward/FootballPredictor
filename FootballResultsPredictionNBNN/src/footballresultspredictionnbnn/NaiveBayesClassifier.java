@@ -19,7 +19,7 @@ public class NaiveBayesClassifier {
     private static double p;
     private static int num_attr = 4; 
     private static int train_size = 6;
-    private static int test_size = 3;
+    private static int test_size = 1;
     private static int num_category = 3;
     
     /**
