@@ -134,11 +134,12 @@ public class PredictorUI{
         NaiveBayesClassifier team2 = new NaiveBayesClassifier();
         
         
-        
+        int[] scorePredH = {this.getHomePred(), this.getAwayPred(),0,0};
+        int[] scorePredA = {this.getAwayPred(), this.getHomePred(),0,0};
         System.out.println("Liverpool:");
-        double probTeam1 = team1.calc(teamData, testData1);
+        double probTeam1 = team1.calc(teamData, testData1,scorePredH);
         System.out.println("Newcastle:");
-        double probTeam2 = team2.calc(teamData2, testData2);
+        double probTeam2 = team2.calc(teamData2, testData2,scorePredA);
         
         Learning neuralNet = new Learning();
     }

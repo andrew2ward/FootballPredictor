@@ -37,9 +37,11 @@ public class NaiveBayesClassifier {
      * 
      * @param test
      * @param cat
+     * @param <error>
+     * @param scorePred
      * @return 
      */
-    public double calculateProb(String[] test, String cat)
+    public double calculateProb(String[] test, String cat, int[] scorePred)
     {
         //Declare count array with length num_attr
         int count[] = new int [num_attr];
@@ -82,7 +84,7 @@ public class NaiveBayesClassifier {
                 try
                 {
                     int num = Integer.parseInt(teamData[j][i]);
-                    if((num>=1)&&(cat.equals(teamData[j][num_attr])))
+                    if((scorePred[i]>=num)&&(cat.equals(teamData[j][num_attr])))
                     {
                         count[i]++;
                     }
@@ -108,9 +110,10 @@ public class NaiveBayesClassifier {
      * 
      * @param teamData
      * @param testData
+     * @param scorePred
      * @return double max
      */
-    public double calc(String[][] teamData, String testData[][])
+    public double calc(String[][] teamData, String testData[][], int[] scorePred)
     {
         //sets teamData 2D array
         this.teamData = teamData;
@@ -132,7 +135,7 @@ public class NaiveBayesClassifier {
             {
                 //sets the result as the probability returned for the given 
                 //category
-                result[i] = calculateProb(testData[k], category[i]);
+                result[i] = calculateProb(testData[k], category[i], scorePred);
                 //prints out probability of each category
                 System.out.println(category[i] + ": " + result[i]);
                 
