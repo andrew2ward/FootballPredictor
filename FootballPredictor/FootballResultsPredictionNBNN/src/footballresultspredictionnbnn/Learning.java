@@ -28,7 +28,7 @@ public class Learning {
     private static int inputPatterns = 5;
     private static double LEASTMEANSQUAREERROR = 0.001;
     private static double TEACHINGSTEP = 0.05;
-    private static int MAX_TESTS = 15;
+    private static int MAX_TESTS = 1;
     
     public static double normalise(double x)
     {
@@ -63,13 +63,13 @@ public class Learning {
             for(int i=0; i< MAX_TESTS; i++)
             {
                 output = nn.calcWeights(i,input);
-                error += fabs(input[i][3]-output);
+                error += fabs(input[i][2]-output);
                 
-                weights[0] += TEACHINGSTEP*(input[i][3]-output)*
+                weights[0] += TEACHINGSTEP*(input[i][2]-output)*
                         input[i][0];
-                weights[1] += TEACHINGSTEP*(input[i][3]-output)*
+                weights[1] += TEACHINGSTEP*(input[i][2]-output)*
                         input[i][1];
-                weights[2] += TEACHINGSTEP*(input[i][3]-output);
+                weights[2] += TEACHINGSTEP*(input[i][2]-output);
             }
             mse = error/(double)MAX_TESTS;
             epochs++;
