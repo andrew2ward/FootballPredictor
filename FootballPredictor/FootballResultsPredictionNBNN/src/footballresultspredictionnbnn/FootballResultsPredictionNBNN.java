@@ -6,11 +6,9 @@
 package footballresultspredictionnbnn;
 import java.awt.*;
 import java.io.*;
-
 import java.net.*;
 import java.util.*;
 
-import javax.swing.*;
 
 /**
  *
@@ -18,8 +16,7 @@ import javax.swing.*;
  */
 public class FootballResultsPredictionNBNN extends Frame{
 
-    private static int homePrediction;
-    private static int awayPrediction;
+   
      private static String[][] teamData = new String[][]
      {    
         //Liverpool
@@ -91,18 +88,6 @@ public class FootballResultsPredictionNBNN extends Frame{
         
 
     }
-    
-    public void setHomePred(int pred)
-    {
-        this.homePrediction = pred;
-    }
-    
-    public void setAwayPred(int pred)
-    {
-        this.awayPrediction = pred;
-    }
-    
-  
     
     public static void jsonGetRequest() throws MalformedURLException, IOException 
     {

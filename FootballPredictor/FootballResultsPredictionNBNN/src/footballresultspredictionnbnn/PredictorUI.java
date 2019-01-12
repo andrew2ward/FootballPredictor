@@ -9,52 +9,41 @@ import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 /**
  *
  * @author Andy
  */
 public class PredictorUI{
     //private vars
-    private String[] data ={"Arsenal"};
+    private final String[] data ={"Arsenal","Bournemouth","Brighton","Burnley",
+        "Chelsea","Crystal Palace","Everton","Huddersfield","Leicester",
+        "Liverpool","Manchester City","Manchester United","Newcastle",
+        "Southampton","Watford","West Ham"};
     private int homePred;
     private int awayPred;
+    private String homeTeamName;
+    private String awayTeamName;
     
+    private String[][] teamData = new String[38][5];
     
-    private static int homePrediction;
-    private static int awayPrediction;
-    private static final String[][] teamData = new String[][]
-     {    
-        //Liverpool
-        //team, gs, ga, yc, rc, result  
-        {/*"Watford",*/         "3","0","1","1","win"},
-        {/*"Fulham",*/          "2","0","1","0","win"},
-        {/*"Arsenal",*/         "1","1","1","1","draw"},
-        {/*"Cardiff",*/         "4","1","0","0","win"},
-        {/*"Huddersfield",*/    "1","0","2","0","win"},
-        {/*"Manchester City",*/ "0","0","1","0","draw"}
-     };
      
      private String[][] testData1 = new String[3][4];
      
-     private static String[][] teamData2 = new String[][]
-     {
-        //Newcastle
-        //team, gs, ga, yc, rc, result  
-        {/*"West Ham",*/        "0","3","3","0","loss"},
-        {/*"Burnley",*/         "2","1","1","0","win"},
-        {/*"Bournemouth",*/     "0","1","2","0","loss"},
-        {/*"Watford",*/         "0","1","1","0","loss"},
-        {/*"Southampton",*/     "0","0","1","0","draw"},
-        {/*"Brighton",*/        "0","1","0","0","loss"}
-    };
+     private String[][] teamData2 = new String[38][5];
      
-     private static String[][] testData2 = new String[3][4];
+     
+     private String[][] testData2 = new String[3][4];
      
     
     //constructor
@@ -73,15 +62,25 @@ public class PredictorUI{
         f.setSize(250,250);
         f.setLocation(300,200);
         
-        GridLayout g = new GridLayout(0,2);
-        //f.setLayout(g);
-        JList teamList = new JList(this.data);
-        teamList.setSize(50, 20);
-        teamList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        teamList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        teamList.setVisibleRowCount(-1);
-        f.add(teamList, BorderLayout.NORTH); 
+        JPanel p1 = new JPanel();
         
+        JLabel l1 = new JLabel("Home Team");
+        JLabel l2 = new JLabel("Away Team");
+        
+        GridLayout g = new GridLayout(0,2);
+        JComboBox teamHomeCombo = new JComboBox(this.data);
+        teamHomeCombo.setSize(50, 20);
+        teamHomeCombo.setSelectedIndex(0); 
+        p1.add(l1);
+        p1.add(teamHomeCombo, BorderLayout.NORTH);
+                
+        JComboBox teamAwayCombo = new JComboBox(this.data);
+        teamAwayCombo.setSize(50, 20);
+        teamAwayCombo.setSelectedIndex(0); 
+        p1.add(l2);
+        p1.add(teamAwayCombo, BorderLayout.SOUTH);
+        
+        f.add(p1);
         Container teams = new Container();
         teams.setLayout(g);
         JTextField homeTeam = new JTextField(10);
@@ -95,8 +94,11 @@ public class PredictorUI{
         JButton submit = new JButton("Submit");
         submit.addActionListener(new ActionListener()
         {
+            
             public void actionPerformed(ActionEvent e)
             {
+                homeTeamName = (String) teamHomeCombo.getSelectedItem();
+                awayTeamName = (String) teamAwayCombo.getSelectedItem();
                 homePred = Integer.parseInt(homeTeam.getText());
                 awayPred = Integer.parseInt(awayTeam.getText());
                 String[] scoreHome = {homeTeam.getText(),awayTeam.getText(), "0","0"};
@@ -105,16 +107,18 @@ public class PredictorUI{
                 testData2[0] = scoreAway;
                 homeTeam.setText("");
                 awayTeam.setText("");
-                
+                try {
+                    loadTeams(homeTeamName,'h');
+                    loadTeams(awayTeamName,'a');
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(PredictorUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 predict();
             }
-        });
-        
+        });        
         teams.add(submit);
-        f.add(teams, BorderLayout.SOUTH);
-        
-        f.setVisible(true);
-        
+        f.add(teams, BorderLayout.SOUTH);        
+        f.setVisible(true);        
     }
     
     public int getHomePred()
@@ -129,19 +133,56 @@ public class PredictorUI{
     
     public void predict()
     {
-        NaiveBayesClassifier team1 = new NaiveBayesClassifier();
-        //when call calculate propability, send team data
+        NaiveBayesClassifier team1 = new NaiveBayesClassifier();        
         NaiveBayesClassifier team2 = new NaiveBayesClassifier();
         
-        
-        
-        System.out.println("Liverpool:");
+        //when call calculate propability, send team data
+        //System.out.println("Liverpool:");
         double probTeam1 = team1.calc(teamData, testData1);
-        System.out.println("Newcastle:");
+        //System.out.println("Newcastle:");
         double probTeam2 = team2.calc(teamData2, testData2);
         
         Learning neuralNet = new Learning(probTeam1, probTeam2);
         
+    }
+    
+    /**
+     * Reads relevant files and populates arrays
+     * @param teamName
+     * @param homeAway
+     * @throws FileNotFoundException 
+     */
+    public void loadTeams(String teamName, char homeAway) throws FileNotFoundException
+    {
+        String filePath = "src\\footballresultspredictionnbnn\\Results\\"+teamName+".txt";
+        //System.out.println(file.getAbsolutePath());
+        File file = new File("");
+        File f = new File(file+filePath);
+        Scanner team = new Scanner(f);
+        
+        String token = "";
+        //String[] homeRes = new String[5];
+        int j = 0;
+        System.out.println(teamName);
+        while(team.hasNext())
+        {
+            token = team.nextLine();
+            System.out.println(token);
+            String[] result = token.split("\t");
+            if(homeAway == 'h')
+            {
+                teamData[j] = result;
+            }
+            else if(homeAway == 'a')
+            {
+                teamData2[j] = result;            
+            }
+            
+            j++;  
+        }
+        team.close();
+        
+            
     }
 
     
