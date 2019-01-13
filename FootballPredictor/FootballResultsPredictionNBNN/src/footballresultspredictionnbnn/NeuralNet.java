@@ -93,7 +93,9 @@ public class NeuralNet {
         
         result = ((input[test][0] * weights[0]) +
                     (input[test][1] * weights[1])+
-                    (1.0 * weights[2]));
+                    (input[test][2]*weights[2])+
+                    (input[test][3]*weights[3])+
+                    (1.0 * weights[4]));
         
         result = 1.0/(1.0 + Math.exp(-result));
         
