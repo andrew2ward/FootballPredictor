@@ -1,18 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * * Name: Andrew Ward
+Student ID: 15002106
  */
 package footballresultspredictionnbnn;
 import java.util.*;
 
 /**
  *
- * @author Andy
+ * @author Andrew Ward
+Student ID: 15002106
  */
 public class NeuralNet {
     //decalre number of inputs
-    private int numInputs = 2;
+    private int numInputs = 4;
     //create input layer with 1+numInputs to make room for bias
     private double[] inputLayer = new double[numInputs+1];
     //create array of weights, amount=numInputs plus 1 for bias
@@ -35,6 +35,11 @@ public class NeuralNet {
        //activationFunction = function;
     }
     
+    /**
+     * 
+     * @param inputPos
+     * @param d 
+     */
     public void inputAt(int inputPos, double d)
     {
         inputLayer[inputPos] = d;   
@@ -56,10 +61,16 @@ public class NeuralNet {
         action = 1.0/(1.0 + Math.exp(-action));
         
         return action;        
-    }
+    }  
     
-    
-    
+    /**
+     * 
+     * @param d
+     * @param e
+     * @param i
+     * @param input
+     * @return 
+     */
     public double recall(double d, double e, int i, double[][] input)
     {
         //num inputs
@@ -70,6 +81,12 @@ public class NeuralNet {
         return calcWeights(i,input);
     }
     
+    /**
+     * 
+     * @param test
+     * @param input
+     * @return 
+     */
      public double calcWeights(int test, double[][] input)
     {
         double result;
@@ -83,7 +100,10 @@ public class NeuralNet {
         return result;
         
     }
-     
+     /**
+      * 
+      * @return weights array
+      */
      public double[] getWeights()
      {
          return weights;

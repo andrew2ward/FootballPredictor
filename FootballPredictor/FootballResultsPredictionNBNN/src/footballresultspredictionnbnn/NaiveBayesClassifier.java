@@ -1,24 +1,24 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * * Name: Andrew Ward
+Student ID: 15002106
  */
 package footballresultspredictionnbnn;
 
 /**
  *
- * @author Andy
+ * @author Andrew Ward
+Student ID: 15002106
  */
 public class NaiveBayesClassifier {
     
     //Declare new 2D array of Strings to store teamData.
     private String[][] teamData = new String[6][5];
     
-    //variables
+    //Attributes
     private static double m;
     private static double p;
-    private static int num_attr = 4; 
-    private static int train_size = 6;
+    private static int num_attr = 2; 
+    private static int train_size = 15;
     private static int test_size = 1;
     private static int num_category = 3;
     
@@ -35,11 +35,14 @@ public class NaiveBayesClassifier {
     
     /**
      * 
-     * @param test
-     * @param cat
+     * @param test array string
+     * @param cat category string
+     * @param homePred int
+     * @param awayPred int
      * @return 
      */
-    public double calculateProb(String[] test, String cat)
+    public double calculateProb(String[] test, String cat, int homePred,
+            int awayPred)
     {
         //Declare count array with length num_attr
         int count[] = new int [num_attr];
@@ -72,29 +75,39 @@ public class NaiveBayesClassifier {
             //loop for the amount of training samples
             for(int j=0; j<train_size; j++)
             {
-                /*
-                Possibly tweak this section to compare goals scored and goals 
-                conceded as this is the key indicator as to whether the match 
-                was a win, loss or draw. 
-                Could also use the p(win/draw/loss) to create an average 
-                strength value. 
-                */                
-
                 int num = Integer.parseInt(teamData[j][i]);
-                if((num>=1)&&(cat.equals(teamData[j][num_attr])))
+                if(j==0)
                 {
-                    count[i]++;
+                    if((num>=homePred)&&(cat.equals(teamData[j][num_attr])))
+                    {
+                        count[i]++;
+                    }
+                }
+                else if(j==1)
+                {
+                    if((num>=awayPred)&&(cat.equals(teamData[j][num_attr])))
+                    {
+                        count[i]++;
+                    }
+                }
+                else
+                {
+                    if((num>=1)&&(cat.equals(teamData[j][num_attr])))
+                    {
+                        count[i]++;
+                    }
                 }
             }
             //calculate probability and concatinate to p_category
             p_category *= ((double)count[i]+m*p)/((double)num_category + m);
             /*Prints out probability of each result given the predicted goals 
-            scored, conceded yellow cards and red cards. 
+            scored and conceded
             E.g. score 2 goals then prob of winning, losing and drawing is output
             based on previous results when scoring multiple goals. 
             */            
-            System.out.println("Attribute:Count "+test[i] + " : " + count[i] + " (probability = " +
-                    ((double)count[i] + m * p)/((double)num_category + m)+")");
+            System.out.println("Attribute:Count "+test[i] + " : " + count[i] + 
+                    " (probability = " + ((double)count[i] + m * p)/
+                            ((double)num_category + m)+")");
             
         }
         return p_category;
@@ -106,7 +119,8 @@ public class NaiveBayesClassifier {
      * @param testData
      * @return double max
      */
-    public double calc(String[][] teamData, String testData[][])
+    public double calc(String[][] teamData, String testData[][], int homePred, 
+            int awayPred)
     {
         //sets teamData 2D array
         this.teamData = teamData;
@@ -128,7 +142,8 @@ public class NaiveBayesClassifier {
             {
                 //sets the result as the probability returned for the given 
                 //category
-                result[i] = calculateProb(testData[k], category[i]);
+                result[i] = calculateProb(testData[k], category[i], homePred,
+                        awayPred);
                 //prints out probability of each category
                 System.out.println(category[i] + ": " + result[i]);
                 
@@ -145,7 +160,7 @@ public class NaiveBayesClassifier {
                     + category[max_position] + " with " + max);
             
         }
-       // average = average/num_category;
+        //average = average/num_category;
             //System.out.println("Average: "+average);
         return max;
     }
