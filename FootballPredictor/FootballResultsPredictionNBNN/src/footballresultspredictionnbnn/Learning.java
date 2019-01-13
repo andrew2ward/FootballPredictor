@@ -20,18 +20,18 @@ public class Learning {
     
     //2d array
     private static double input[][] = {
-        //home,away,outcome
-        {1.0,0.1,1.0},
-        {0.8,0.4,1.0},
-        {0.5,0.5,0.5},
-        {0.3,0.7,0.0},
-        {0.5,0.8,0.0}        
+        //home,away,socre, score, outcome
+        {1.0,0.1,3.0,2.0,1.0},
+        {0.8,0.4,1.0,0.0,1.0},
+        {0.5,0.5,2.0,2.0,0.5},
+        {0.3,0.4,1.0,1.9,0.5},
+        {0.5,0.8,1.0,3.0,0.0}        
     };
     
     //number of inputs in the above array
     private static int inputPatterns = 5;
-    private static double LEASTMEANSQUAREERROR = 0.1;
-    private static double TEACHINGSTEP = 0.001;
+    private static double LEASTMEANSQUAREERROR = 0.001;
+    private static double TEACHINGSTEP = 0.01;
     private static int MAX_TESTS = 5;
     
     /**
@@ -72,13 +72,13 @@ public class Learning {
         double output;
         
         //create a neural net with 2 inputs
-        NeuralNet nn = new NeuralNet(2);
+        NeuralNet nn = new NeuralNet(4);
         
-        double mse = 999;
+        double mse = 99;
         int epochs = 0;
         double weights[] = nn.getWeights();
         //train NN
-        while(fabs(mse-LEASTMEANSQUAREERROR)>0.7)
+        while(fabs(mse-LEASTMEANSQUAREERROR)>0.81)
         {
             mse = 0;
             double error = 0;
@@ -86,13 +86,17 @@ public class Learning {
             for(int i=0; i< MAX_TESTS; i++)
             {
                 output = nn.calcWeights(i,input);
-                error += fabs(input[i][2]-output);
+                error += fabs(input[i][4]-output);
                 
-                weights[0] += TEACHINGSTEP*(input[i][2]-output)*
+                weights[0] += TEACHINGSTEP*(input[i][4]-output)*
                         input[i][0];
-                weights[1] += TEACHINGSTEP*(input[i][2]-output)*
-                        input[i][1];                
-                weights[4] += TEACHINGSTEP*(input[i][2]-output);
+                weights[1] += TEACHINGSTEP*(input[i][4]-output)*
+                        input[i][1]; 
+                weights[2] += TEACHINGSTEP*(input[i][4]-output)*
+                        input[i][2];
+                weights[3] += TEACHINGSTEP*(input[i][4]-output)*
+                        input[i][3];
+                weights[4] += TEACHINGSTEP*(input[i][4]-output);
             }
             mse = error/(double)MAX_TESTS;
             epochs++;
@@ -117,24 +121,25 @@ public class Learning {
 //                epochs++;          
                 
         }
-        double maxResult = 0;
+        double average = 0;
         for(int i = 0; i<MAX_TESTS; i++)
         {
             result = nn.recall(normalise(homeTeam),normalise(awayTeam),i,input);
-            if(result > maxResult)
-            {
-               maxResult = result;
-            }
+           
+               average += result;
+            
                       
             System.out.println("Test " +(i+1)+": "+ result);
         }     
+        average = average/MAX_TESTS;
         //BAsed on result, output either home win/draw/away win
-           if(maxResult<=0.25)
+        System.out.println("Average: "+average);
+           if(average<=0.3)
            {
                System.out.println("Win for away team");
                JOptionPane.showMessageDialog(null, "Win for Away Team");
            }
-           else if(maxResult>=0.7)
+           else if(average>=0.5)
            {
                System.out.println("Win for home team");
                JOptionPane.showMessageDialog(null, "Win for Home team");
